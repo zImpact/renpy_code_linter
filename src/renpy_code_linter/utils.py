@@ -23,14 +23,13 @@ def format_text_report(issues: list[Issue]):
     for issue in issues:
         out.append(f"{issue.file}:{issue.line}: {issue.type}: {issue.message}"
                    + (f" – Suggestion: {issue.fix}" if issue.fix else ""))
-    return "\n".join(out)
+    return "\n\n".join(out)
 
 def save_report(report: str) -> None:
-    summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary_file:
-        with open(summary_file, "a", encoding="utf-8") as f:
-            f.write(report + "\n")
+    filename = os.getenv("GITHUB_STEP_SUMMARY", MARKDOWN_SAVE_FILENAME)
+    mode = "a" if os.getenv("GITHUB_STEP_SUMMARY") else "w"
 
-    else:
-        with open(MARKDOWN_SAVE_FILENAME, "w", encoding="utf-8") as f:
-            f.write(report + "\n")
+    with open(filename, mode, encoding="utf-8") as f:
+        f.write("```\n")
+        f.write(report + "\n")
+        f.write("```\n")
