@@ -1,5 +1,5 @@
 import os
-from models import Issue
+from models import Issue, MARKDOWN_SAVE_FILENAME
 
 def gather_rpy_files(paths: list[str]) -> list[str]:
     result = []
@@ -24,3 +24,13 @@ def format_text_report(issues: list[Issue]):
         out.append(f"{issue.file}:{issue.line}: {issue.type}: {issue.message}"
                    + (f" – Suggestion: {issue.fix}" if issue.fix else ""))
     return "\n".join(out)
+
+def save_report(report: str) -> None:
+    summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_file:
+        with open(summary_file, "a", encoding="utf-8") as f:
+            f.write(report + "\n")
+
+    else:
+        with open(MARKDOWN_SAVE_FILENAME, "w", encoding="utf-8") as f:
+            f.write(report + "\n")

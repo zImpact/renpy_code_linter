@@ -5,8 +5,14 @@ inputs:
     description: "Путь к папке с кодом проекта"
     required: true
     type: string
+  output_type:
+    description: "Формат вывода"
+    required: false
+    type: string
 runs:
   using: "docker"
   image: "Dockerfile"
   args:
     - ${{ inputs.folder }}
+    - --output-type
+    - ${{ inputs.output_type }}
