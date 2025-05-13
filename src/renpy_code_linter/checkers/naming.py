@@ -1,6 +1,7 @@
 import re
-from .base import BaseChecker
+from checkers.base import BaseChecker
 from models import Issue, IssueType
+from utils import to_snake_case, to_camel_case
 
 class NamingChecker(BaseChecker):
     func_var_re = re.compile(r'^[a-z_][a-z0-9_]*$')
@@ -17,7 +18,7 @@ class NamingChecker(BaseChecker):
                         i,
                         IssueType.WARNING.value,
                         f"Имя функции '{name}' не в snake_case",
-                        "Использовать lower_case_with_underscores"
+                        f"Использовать '{to_snake_case(name)}'"
                     )
 
             if s.startswith("class "):
@@ -27,7 +28,7 @@ class NamingChecker(BaseChecker):
                         i,
                         IssueType.WARNING.value,
                         f"Имя класса '{name}' не в CamelCase",
-                        "Использовать MyClassName"
+                        f"Использовать {to_camel_case(name)}"
                     )
 
         return self.issues

@@ -1,4 +1,4 @@
-from .base import BaseChecker
+from checkers.base import BaseChecker
 from models import Issue, IssueType
 
 class IndentationChecker(BaseChecker):

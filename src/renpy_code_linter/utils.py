@@ -1,5 +1,20 @@
 import os
+import re
 from models import Issue, MARKDOWN_SAVE_FILENAME
+
+def to_snake_case(s: str) -> str:
+    s = re.sub(r"[ \-\.]+", "_", s)
+    s = re.sub(r"(?<=[a-z0-9])([A-Z])", r"_\1", s)
+    s = s.lower()
+    s = re.sub(r"_+", "_", s).strip("_")
+    return s
+
+def to_camel_case(s: str) -> str:
+    parts = re.split(r"[ _\-\.\t]+", s)
+    parts = [p for p in parts if p]
+    transformed = [p[0].upper() + p[1:] for p in parts]
+    result = "".join(transformed)
+    return result
 
 def gather_rpy_files(paths: list[str]) -> list[str]:
     result = []
