@@ -17,29 +17,28 @@ class SpacingChecker(BaseChecker):
             text = raw.rstrip("\n")
             stripped = text.strip()
 
-            if stripped == "":
-                paren_depth = max(paren_depth + text.count("(") - text.count(")"), 0)
-                continue
+            paren_depth = max(paren_depth + text.count("(") - text.count(")"), 0)
+            
+            if stripped != "":
+                text_without_literals = self.string_literals.sub("", text)
+                for m in self.op_pattern.finditer(text_without_literals):
+                    op = m.group(0)
+                    start, end = m.span(0)
 
-            text_without_literals = self.string_literals.sub("", text)
-            for m in self.op_pattern.finditer(text_without_literals):
-                op = m.group(0)
-                start, end = m.span(0)
-
-                prefix = text_without_literals[:start]
-                local_depth = prefix.count("(") - prefix.count(")")
-                if paren_depth + local_depth > 0:
-                    continue
-                
-                left = text_without_literals[start - 1] if start - 1 >= 0 else ""
-                right = text_without_literals[end] if end < len(text_without_literals) else ""
-                if not (left.isspace() and right.isspace()):
-                    self.add_issue(
-                        i,
-                        IssueType.WARNING.value,
-                        f"Оператор '{op}' без пробелов вокруг",
-                        f"Добавить пробелы вокруг '{op}'"
-                    )
+                    prefix = text_without_literals[:start]
+                    local_depth = prefix.count("(") - prefix.count(")")
+                    if paren_depth + local_depth > 0:
+                        continue
+                    
+                    left = text_without_literals[start - 1] if start - 1 >= 0 else ""
+                    right = text_without_literals[end] if end < len(text_without_literals) else ""
+                    if not (left.isspace() and right.isspace()):
+                        self.add_issue(
+                            i,
+                            IssueType.WARNING.value,
+                            f"Оператор '{op}' без пробелов вокруг",
+                            f"Добавить пробелы вокруг '{op}'"
+                        )
                    
             if self.trailing.search(raw):
                 self.add_issue(
